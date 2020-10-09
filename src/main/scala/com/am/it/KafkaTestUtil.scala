@@ -37,7 +37,7 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
   }
 
   /**
-   * execute block by starting and stopping the kafka instance
+   * execute block by starting and then stops kafka instance once done
    */
   def withKafkaRunning[A](f: => A): A = {
     start()
