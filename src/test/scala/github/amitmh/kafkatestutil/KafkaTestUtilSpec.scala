@@ -1,4 +1,4 @@
-package com.am.it
+package github.amitmh.kafkatestutil
 
 import java.util.concurrent.TimeUnit
 import java.util.{Collections, Properties}
@@ -12,15 +12,16 @@ import org.scalatest.matchers.should
 import scala.collection.JavaConversions.asScalaIterator
 
 class KafkaTestUtilSpec extends AnyFlatSpec with should.Matchers {
-  "withKafkaRunning" should "" in {
+  "withKafkaRunning" should "allow to publish and consumption of kafka record on specified port" in {
     KafkaTestUtil(kafkaPort = testKafkaPort).withKafkaRunning {
       // given
       val record = new ProducerRecord[String, String](topic, message)
       val producer = new KafkaProducer[String, String](configs)
-      val consumer = new KafkaConsumer[String, String](configs).tap(_.subscribe(Collections.singleton(topic)))
 
       // when
       producer.send(record).get(timeout, TimeUnit.MILLISECONDS)
+
+      val consumer = new KafkaConsumer[String, String](configs).tap(_.subscribe(Collections.singleton(topic)))
       val received = consumer.poll(timeout).iterator().toList.map(_.value())
 
       // then
@@ -31,7 +32,7 @@ class KafkaTestUtilSpec extends AnyFlatSpec with should.Matchers {
 
   private lazy val message = "value"
   private lazy val topic = "topic"
-  private lazy val timeout = 30000
+  private lazy val timeout = 300000
   private lazy val testKafkaPort = 2000
   private lazy val configs = new Properties()
     .tap(_ put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, s"localhost:$testKafkaPort"))

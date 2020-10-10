@@ -1,4 +1,4 @@
-name := "kafka-it"
+name := "kafka-test-util"
 version := "0.1"
 scalaVersion := "2.11.8"
 

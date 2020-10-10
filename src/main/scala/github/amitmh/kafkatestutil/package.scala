@@ -1,6 +1,6 @@
-package com.am
+package github.amitmh
 
-package object it {
+package object kafkatestutil {
 
   implicit class Ops[A](a: A) {
     def pipe[B](fab: A => B): B = fab(a)
