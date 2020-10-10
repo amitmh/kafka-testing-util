@@ -19,8 +19,8 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
     "enable.zookeeper" -> "true",
     "brokerid" -> "1",
     "listeners" -> s"PLAINTEXT://:$kafkaPort",
-    "message.max.bytes" -> "26214400",
-    "replica.fetch.max.bytes" -> s"26214400",
+    "message.max.bytes" -> s"${1 << 26}",
+    "replica.fetch.max.bytes" -> s"${1 << 26}",
     "offsets.topic.replication.factor" -> "1"
   ) ++ config
 
@@ -39,9 +39,9 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
   /**
    * execute block by starting and then stops kafka instance once done
    */
-  def withKafkaRunning[A](f: => A): A = {
+  def withKafkaRunning[A](block: => A): A = {
     start()
-    try f finally stop()
+    try block finally stop()
   }
 
   /**
