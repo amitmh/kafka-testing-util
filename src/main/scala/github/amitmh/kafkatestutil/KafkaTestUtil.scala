@@ -54,15 +54,14 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
   /**
    * silently stop associated kafka instance
    */
-  def stop(): Unit =
-    try {
-      logger.trace(s"shutting down kafka")
-      cli.close()
-      kafka.shutdown()
-      kafka.awaitShutdown()
-      zkTestServer.stop()
-      logger.debug(s"kafka shutdown was successful")
-    } finally {}
+  def stop(): Unit = {
+    logger.trace(s"shutting down kafka")
+    cli.close()
+    kafka.shutdown()
+    kafka.awaitShutdown()
+    zkTestServer.stop()
+    logger.debug(s"kafka shutdown was successful")
+  }
 }
 
 object KafkaTestUtil {
