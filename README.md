@@ -4,7 +4,7 @@ Provides wrapper around [KafkaServerStartable](https://github.com/apache/kafka/b
 
 ##### Usage
 
-Simplest way to execute block by starting and then stops kafka instance once done
+The simplest way to execute `block` while making sure a kafka instance is running:
 
 ```scala 
  KafkaTestUtil().withKafkaRunning {
