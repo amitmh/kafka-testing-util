@@ -3,9 +3,11 @@ package github.amitmh.kafkatestutil
 import java.util.Properties
 
 import kafka.server.KafkaServerStartable
+import kafka.zk.{AdminZkClient, KafkaZkClient}
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.RetryOneTime
 import org.apache.curator.test.TestingServer
+import org.apache.kafka.common.utils.Time
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters.mapAsJavaMapConverter
@@ -32,6 +34,14 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
   private val zkTestServer = new TestingServer(zookeeperPort)
   private val cli = CuratorFrameworkFactory.newClient(zkTestServer.getConnectString, new RetryOneTime(2000))
   private val kafka = KafkaServerStartable.fromProps(new Properties tap (_ putAll baseProps.asJava))
+  
+  private val zkKafkaClient = KafkaZkClient(s"localhost:$zookeeperPort", isSecure = false, 1000, 1000, 100, Time.SYSTEM)
+  val admin: AdminZkClient = new AdminZkClient(zkKafkaClient)
+
+  /**
+   * deletes specified <code>topic</code>
+   */
+  def deleteTopic(topic: String): Unit = admin.deleteTopic(topic)
 
   /**
    * start associated kafka instance
@@ -46,9 +56,9 @@ class KafkaTestUtil(kafkaPort: Int, zookeeperPort: Int, config: Map[String, Stri
   /**
    * execute block by starting and then stops kafka instance once done
    */
-  def withKafkaRunning[A](block: => A): A = {
+  def withKafkaRunning[A](block: AdminZkClient => A): A = {
     start()
-    try block finally stop()
+    try block(admin) finally stop()
   }
 
   /**
